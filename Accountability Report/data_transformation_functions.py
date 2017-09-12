@@ -1,3 +1,4 @@
+import pandas as pd
 def build_school_dict(report, district_name): 
     '''Builds school dictionary given the sheet and district name 
     report: xlrd sheet object 
@@ -17,9 +18,9 @@ def build_grade_dict(report, school_dict):
     school_dict: dictionary of schools formatted like {school_name: cellno}'''
     grade_list = {}
     for schools, cell_no in school_dict.iteritems():
-        math_grade = report.cell_value(cell_no, 33).replace('>95', '95').replace('<10', '10')
-        bio_grade = report.cell_value(cell_no, 36).replace('>95', '95').replace('<10', '10')
-        eng_grade = report.cell_value(cell_no, 39).replace('>95', '95').replace('<10', '10')
+        math_grade = report.cell_value(cell_no, 33).replace('>95', '95').replace('<10', '10').replace('<5', '5')
+        bio_grade = report.cell_value(cell_no, 36).replace('>95', '95').replace('<10', '10').replace('<5', '5')
+        eng_grade = report.cell_value(cell_no, 39).replace('>95', '95').replace('<10', '10').replace('<5', '5')
         school_grade = report.cell_value(cell_no, 6)
         if [i for i in ['*', '', 'N/A'] if i in [str(math_grade), str(bio_grade), str(eng_grade), school_grade]]:
             pass
@@ -29,3 +30,4 @@ def build_grade_dict(report, school_dict):
 
             grade_list[schools] = "%s, %s, %s, %s" %(str(math_grade), str(bio_grade), str(eng_grade), school_grade)
     return grade_list
+
