@@ -1,4 +1,4 @@
-from data_transformation_functions import build_school_dict, build_grade_dict
+from data_transformation_functions import merge_dicts, build_school_dict, build_grade_dict, build_grade_dataframe
 from plot_functions import plot_schools
 import matplotlib.pyplot as plt
 import numpy as np 
@@ -25,14 +25,15 @@ southeast_grades = build_grade_dict(report, southeast_schools)
 piedmont_schools = build_school_dict(report, 'Piedmont Triad')
 piedmont_grades = build_grade_dict(report, piedmont_schools)
 
+overall_grades = merge_dicts(northwest_schools, north_central_schools, western_schools, northeast_schools, southwest_schools, 
+							 sandhills_schools, southeast_schools, piedmont_schools)
+k = LabelEncoder()
+overall_dataframe = build_grade_dataframe(report, overall_grades)
+overall_dataframe['District'] = k.fit_transform(overall_dataframe['District'])
 
-print(northwest_dataframe)
-s = northwest_dataframe[0]
-northwest_dataframe.join(s.apply(lambda x: pd.Series(x.split(', '))), how='left', lsuffix='_left', rsuffix='_right')
-print('--------------------------------')
-print(northwest_dataframe)
-print(northwest_dataframe.reset_index()[[0]])
-scatter_matrix(northwest_dataframe, diagonal='kde')
+scatter_matrix(overall_dataframe, diagonal='kde')
+plt.show()
 
-
+relation_matrix = overall_dataframe.corr()
+print(relation_matrix)
 
