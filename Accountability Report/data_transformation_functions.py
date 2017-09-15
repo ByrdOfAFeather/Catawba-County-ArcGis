@@ -42,6 +42,7 @@ def build_grade_dataframe(report, school_dict):
     bio_list = []
     eng_list = [] 
     district_name_list = [] 
+    school_name_list = []
     for schools, listitems in school_dict.iteritems():
         math_grade = report.cell_value(listitems[0], 33).replace('>95', '95').replace('<10', '10').replace('<5', '5')
         bio_grade = report.cell_value(listitems[0], 36).replace('>95', '95').replace('<10', '10').replace('<5', '5')
@@ -57,9 +58,10 @@ def build_grade_dataframe(report, school_dict):
             bio_list.append(float(bio_grade))
             eng_list.append(float(eng_grade))
             district_name_list.append(listitems[1])
+            school_name_list.append(schools)
 
 
-    dataframe = pd.DataFrame({'School': school_list, 'Math': math_list, 'Biology': bio_list, 'English': eng_list, 'District': district_name_list})
+    dataframe = pd.DataFrame({'School': school_list, 'Math': math_list, 'Biology': bio_list, 'English': eng_list, 'District': district_name_list, 'School Name': school_name_list})
     dataframe.set_index(['School'], inplace=True)
     return dataframe
 
