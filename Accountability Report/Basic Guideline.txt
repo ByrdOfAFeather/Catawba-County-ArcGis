@@ -1,12 +1,9 @@
 What I need: 
-Where the school is - currently not a full database. 
+Where the school is: Done 
 What is around the school (Industry)
 Is the school techology based or not? 
-Student teacher ratio 
+Student teacher ratio
 Percent with reduced lunch
-Test scores (*)
+Test scores: Done
 
 
------------------------------------------
-Latitude [Public School] 2014-15
-Longitude [Public School] 2014-15
