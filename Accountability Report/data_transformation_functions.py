@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
+import xlrd
+
+
 def build_school_dict(report, district_name): 
     '''Builds school dictionary given the sheet and district name 
     report: xlrd sheet object 
@@ -74,3 +78,54 @@ def merge_dicts(*dict_args):
         result.update(dictionary)
     return result
 
+
+def setup_dicts():
+    report = xlrd.open_workbook('Databases/acctsumm15.xlsx').sheet_by_index(0)
+    northwest_schools = build_school_dict(report, 'Northwest') # form = {School: cellnumber}
+    northwest_grades = build_grade_dict(report, northwest_schools) # form = {Math, bio, eng, school}
+    north_central_schools = build_school_dict(report, 'North Central')
+    north_central_grades = build_grade_dict(report, north_central_schools)
+    western_schools = build_school_dict(report, 'Western')
+    western_grades = build_grade_dict(report, western_schools)
+    northeast_schools = build_school_dict(report, 'Northeast')
+    northeast_grades = build_grade_dict(report, northeast_schools)
+    southwest_schools = build_school_dict(report, 'Southwest')
+    southwest_grades = build_grade_dict(report, southwest_schools)
+    sandhills_schools = build_school_dict(report, 'Sandhills')
+    sandhills_grades = build_grade_dict(report, sandhills_schools)
+    southeast_schools = build_school_dict(report, 'Southeast')
+    southeast_grades = build_grade_dict(report, southeast_schools)
+    piedmont_schools = build_school_dict(report, 'Piedmont-Triad')
+    piedmont_grades = build_grade_dict(report, piedmont_schools)
+    overall_grades = merge_dicts(northwest_schools, north_central_schools, western_schools, northeast_schools, southwest_schools, sandhills_schools, southeast_schools, piedmont_schools)
+    overall_dataframe = build_grade_dataframe(report, overall_grades)
+    return (overall_dataframe, overall_grades)
+
+def setup_NC_DATAFRAME(overall_grades, overall_dataframe):
+    NC_database = pd.DataFrame.from_csv('Databases/NCLONGLAD.csv', encoding="utf-8")
+    NC_database.drop_duplicates(inplace=True)
+    overall_dataframe.drop_duplicates(inplace=True)
+    NC_database['exists'] = NC_database['School Name [Public School] 2014-15'].isin(overall_grades.keys())
+    NC_database = NC_database.drop(NC_database[NC_database['exists'] == False].index)
+    NC_database.drop('exists', axis=1, inplace=True)
+    NC_database = pd.merge(left=NC_database, right=overall_dataframe, left_on='School Name [Public School] 2014-15', right_on='School Name')
+    NC_database = NC_database.replace('â€'.decode('utf-8'), 'NaN')
+    NC_database = NC_database.replace('†'.decode('utf-8'), 'NaN')
+    NC_database = NC_database.replace('1-Yes', 1)
+    NC_database = NC_database.replace('2-No', 0)
+    NC_database = NC_database.replace('1-Regular school', 1)
+    NC_database = NC_database.replace('2-Special education school', 2)
+    NC_database = NC_database.replace('3-Vocational school', 3)
+    NC_database = NC_database.replace('4-Alternative/other school', 4)
+    NC_database.drop(['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15'], axis=1, inplace=True)
+    NC_database['Grades 9-12 Students [Public School] 2014-15'] = NC_database['Grades 9-12 Students [Public School] 2014-15'].replace('NaN', 999999)
+    NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'] = NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'].replace('NaN', 999999)
+    NC_database['Latitude [Public School] 2014-15'] = NC_database['Latitude [Public School] 2014-15'].replace('NaN', 99999)
+    NC_database['Longitude [Public School] 2014-15'] = NC_database['Longitude [Public School] 2014-15'].replace('NaN', 99999)
+    CORR_database = NC_database
+    new_coloumns = []
+    for columns in NC_database.columns.values:
+        new_coloumns.append(columns.replace('-', '').replace(' ', '').replace('[', '').replace(']', '').replace('(', '').replace(')', ''))
+
+    NC_database.columns = new_coloumns
+    return NC_database

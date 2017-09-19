@@ -6,4 +6,10 @@ Student teacher ratio
 Percent with reduced lunch
 Test scores: Done
 
+---------------------------------------------------------------------------
+Fun Things: See what happens when you try to draw a classification boundry around points (Can I even do this with arc, who knows) 
+
+
+Otherwise: to what extent can latitiutde and longitude predict test scores?
+
 
