@@ -103,26 +103,31 @@ def setup_dicts():
 
 def setup_NC_DATAFRAME(overall_grades, overall_dataframe):
     NC_database = pd.DataFrame.from_csv('Databases/NCLONGLAD.csv', encoding="utf-8")
-    NC_database.drop_duplicates(inplace=True)
-    overall_dataframe.drop_duplicates(inplace=True)
+    st_ratio = pd.DataFrame.from_csv('Databases/stratio.csv', encoding="utf-8")
+    NC_database['StudentTeacherRatio'] = st_ratio['Pupil/Teacher Ratio [Public School] 2014-15'] 
+    print(NC_database.shape)
     NC_database['exists'] = NC_database['School Name [Public School] 2014-15'].isin(overall_grades.keys())
     NC_database = NC_database.drop(NC_database[NC_database['exists'] == False].index)
     NC_database.drop('exists', axis=1, inplace=True)
+    print(len(overall_dataframe))
     NC_database = pd.merge(left=NC_database, right=overall_dataframe, left_on='School Name [Public School] 2014-15', right_on='School Name')
+    print(NC_database.shape)
     NC_database = NC_database.replace('â€'.decode('utf-8'), 'NaN')
     NC_database = NC_database.replace('†'.decode('utf-8'), 'NaN')
+    print(NC_database.shape)
     NC_database = NC_database.replace('1-Yes', 1)
     NC_database = NC_database.replace('2-No', 0)
     NC_database = NC_database.replace('1-Regular school', 1)
     NC_database = NC_database.replace('2-Special education school', 2)
     NC_database = NC_database.replace('3-Vocational school', 3)
     NC_database = NC_database.replace('4-Alternative/other school', 4)
+    NC_database.to_csv('Databases/test.csv')
     NC_database.drop(['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15'], axis=1, inplace=True)
     NC_database['Grades 9-12 Students [Public School] 2014-15'] = NC_database['Grades 9-12 Students [Public School] 2014-15'].replace('NaN', 999999)
     NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'] = NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'].replace('NaN', 999999)
     NC_database['Latitude [Public School] 2014-15'] = NC_database['Latitude [Public School] 2014-15'].replace('NaN', 99999)
     NC_database['Longitude [Public School] 2014-15'] = NC_database['Longitude [Public School] 2014-15'].replace('NaN', 99999)
-    CORR_database = NC_database
+
     new_coloumns = []
     for columns in NC_database.columns.values:
         new_coloumns.append(columns.replace('-', '').replace(' ', '').replace('[', '').replace(']', '').replace('(', '').replace(')', ''))
