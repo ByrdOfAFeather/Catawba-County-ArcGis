@@ -101,24 +101,36 @@ def setup_dicts():
     overall_dataframe = build_grade_dataframe(report, overall_grades)
     return (overall_dataframe, overall_grades)
 
+
+def removesection(frame, *args):
+    for sections in args:
+        print(sections)
+        frame.drop(frame[sections], axis=1, inplace=True)
+    return frame
+
+
+def replace_item(frame, **kwargs):
+    for search, replace in kwargs.items():
+        print(search, replace)
+        frame = frame.replace(search, replace)
+    return frame
+
+
+
 def setup_NC_DATAFRAME(overall_grades, overall_dataframe):
     NC_database = pd.DataFrame.from_csv('Databases/NCLONGLAD.csv', encoding="utf-8")
     st_ratio = pd.DataFrame.from_csv('Databases/stratio.csv', encoding="utf-8")
     NC_database['StudentTeacherRatio'] = st_ratio['Pupil/Teacher Ratio [Public School] 2014-15'] 
+
     NC_database['exists'] = NC_database['School Name [Public School] 2014-15'].isin(overall_grades.keys())
     NC_database = NC_database.drop(NC_database[NC_database['exists'] == False].index)
-    NC_database.drop('exists', axis=1, inplace=True)
     NC_database = pd.merge(left=NC_database, right=overall_dataframe, left_on='School Name [Public School] 2014-15', right_on='School Name')
-    NC_database = NC_database.replace('â€'.decode('utf-8'), 'NaN')
-    NC_database = NC_database.replace('†'.decode('utf-8'), 'NaN')
-    NC_database = NC_database.replace('1-Yes', 1)
-    NC_database = NC_database.replace('2-No', 0)
-    NC_database = NC_database.replace('1-Regular school', 1)
-    NC_database = NC_database.replace('2-Special education school', 2)
-    NC_database = NC_database.replace('3-Vocational school', 3)
-    NC_database = NC_database.replace('4-Alternative/other school', 4)
-    NC_database.to_csv('Databases/test.csv')
-    NC_database.drop(['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15'], axis=1, inplace=True)
+    
+    replacements = {'â€'.decode('utf-8'): 'NaN', '†'.decode('utf-8'): 'NaN', '1-Yes': 1, '2-No': 0, '1-Regular school': 1, '2-Special education school': 2, '3-Vocational school': 3, '4-Alternative/other school': 4}
+    NC_database = replace_item(NC_database, **replacements)
+    NC_database = removesection(NC_database, ['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15', 'exists'])
+    
+    
     NC_database['Grades 9-12 Students [Public School] 2014-15'] = NC_database['Grades 9-12 Students [Public School] 2014-15'].replace('NaN', 999999)
     NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'] = NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'].replace('NaN', 999999)
     NC_database['Latitude [Public School] 2014-15'] = NC_database['Latitude [Public School] 2014-15'].replace('NaN', 99999)

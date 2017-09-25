@@ -6,10 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np 
 from sklearn import svm
 from sklearn.preprocessing import LabelEncoder
-import xlrd
 import pandas as pd
 from pandas.tools.plotting import scatter_matrix
-from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt 
 from mpl_toolkits.mplot3d import Axes3D
 import shapefile
@@ -19,22 +17,12 @@ from descartes import PolygonPatch
 overall_dataframe = setup_dicts()[0]
 overall_grades = setup_dicts()[1]
 
-
-
-### DATABASE COMBINATIONS ###
 NC_database = setup_NC_DATAFRAME(overall_grades, overall_dataframe)
-NC_database['Omega'] = list(zip(NC_database.LatitudePublicSchool201415, NC_database.LongitudePublicSchool201415))
-map = Basemap(llcrnrlon=-119,llcrnrlat=22,urcrnrlon=-64,urcrnrlat=49,
-        projection='lcc',lat_1=33,lat_2=45,lon_0=-95)
+NC_database.to_csv('Databases/current.csv')
 fig = plt.figure()
-ax = Axes3D(fig)
-ax.add_collection3d(map.drawcoastlines(linewidth=0.25))
+ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(NC_database.LatitudePublicSchool201415.astype(float), NC_database.LongitudePublicSchool201415.astype(float), NC_database.Biology.astype(float))
-
-plt.show()
-
-
+# Next steps - graph relation between student teacher raito, test scores, and title 1 eligibility
 
 
 
