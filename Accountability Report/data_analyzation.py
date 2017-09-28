@@ -25,11 +25,12 @@ NC_database = setup_NC_DATAFRAME(overall_grades, overall_dataframe)
 y = NC_database.Biology.astype(float).values
 X = removesection(NC_database, ['Biology', 'Math', 'English', 'StateNamePublicSchoolLatestavailableyear', 'LocationAddress1PublicSchool201415', 
 	'LocationCityPublicSchool201415', 'LocationZIPPublicSchool201415', 'TitleISchoolStatusPublicSchool201415', 'LowestGradeOfferedPublicSchool201415', 
-	'HighestGradeOfferedPublicSchool201415', 'District', 'Grades912StudentsPublicSchool201415'])
+	'HighestGradeOfferedPublicSchool201415', 'District', 'Grades912StudentsPublicSchool201415', 'LatitudePublicSchool201415', 'LongitudePublicSchool201415'])
+columns = []
+
 X_plot_encoder = LabelEncoder()
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.8, random_state=225)
-print(X_test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.5, random_state=225)
 
 X_train.SchoolNamePublicSchool201415 = X_plot_encoder.fit_transform(X_train.SchoolNamePublicSchool201415)
 schoolname = X_train.SchoolNamePublicSchool201415.values.astype(float)
@@ -37,51 +38,56 @@ X_train = removesection(X_train, ['SchoolNamePublicSchool201415',])
 X_train = X_train.as_matrix()
 ait = StandardScaler().fit_transform(X_train)
 X_train = ait
+
 def polynomial_regression_function(degree, alpha, x, y, plot_title='Default', x_lbl='Default', y_lbl='Default', file_name='', location=''):
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
-	k = ElasticNet(alpha=alpha, max_iter=100, positive=True)
-	s = PolynomialFeatures(degree=degree).fit_transform(X_train)
+	k = ElasticNet(alpha=alpha)
+	s = PolynomialFeatures(degree=degree, interaction_only=True).fit_transform(X_train)
+	
 	k.fit(s, y_train)
 	plt.xlabel(x_lbl)
 	plt.ylabel(y_lbl)
 	plt.title(plot_title)
 	plt.scatter(schoolname, y_train)
 	plt.scatter(schoolname, k.predict(s), color='r')
+	
 	props = dict(boxstyle='round', facecolor='white', alpha=.5)
 	ax.text(0.01, 0.026, 'Score = {}'.format(k.score(s, y)), transform=ax.transAxes, verticalalignment='top', bbox=props)
+	
 	if file_name:
 		if location:
 			plt.savefig('Graphs/{}/{}'.format(location, file_name) + '.png')
 		else:
 			plt.savefig('Graphs/{}'.format(file_name) + '.png')
 	plt.show()
+	
 	return {'score': k.score(s, y), 'model': k, 'polynomialx': s, 'degree':degree}
 
 
-k_dict = polynomial_regression_function(5, 1, X_train, y_train, plot_title='Polynomial model with alpha=1 degree=5', x_lbl='School encoded (each increase in 1, represents a new school)', y_lbl='Biology Percent Passing')
+k_dict = polynomial_regression_function(2, .4, X_train, y_train, plot_title='Polynomial model with alpha=1 degree=5', x_lbl='School encoded (each increase in 1, represents a new school)', y_lbl='Biology Percent Passing')
 model = k_dict['model']
 
 X_test.SchoolNamePublicSchool201415 = X_plot_encoder.fit_transform(X_test.SchoolNamePublicSchool201415)
 schoolname = X_test.SchoolNamePublicSchool201415.values.astype(float)
 X_test = removesection(X_test, ['SchoolNamePublicSchool201415',])
-ait = StandardScaler().fit_transform(X_test)
-
+for columns in X_test.columns.values:
+	X_test[columns] = X_test[columns].apply(pd.to_numeric)
 X_test = X_test.as_matrix()
-X_test = PolynomialFeatures(degree=k_dict['degree']).fit_transform(X_test)
+ait = StandardScaler().fit_transform(X_test)
+X_test = PolynomialFeatures(degree=k_dict['degree'], interaction_only=True).fit_transform(X_test)
 
 plt.scatter(schoolname, y_test)
 plt.scatter(schoolname, model.predict(X_test), color='r')
 dummy = DummyRegressor()
 dummy.fit(X_test, y_test)
 plt.plot(schoolname, dummy.predict(X_test), color='g')
+
 plt.show()
 
-
-
 cross_validation = cross_val_score(model, X_test, y_test)
-
 print('Accuracy: {}'.format(model.score(X_test, y_test)))
+print('Dummy: {}'.format(dummy.score(X_test, y_test)))
 
 
 

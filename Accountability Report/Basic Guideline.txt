@@ -11,16 +11,3 @@ Fun Things: See what happens when you try to draw a classification boundry aroun
 
 
 Otherwise: to what extent can latitiutde and longitude predict test scores?
-
-
-GET RID OF:
-StateNamePublicSchoolLatestavailableyear
-SchoolNamePublicSchool201415 (encode)
-LocationAddress1PublicSchool201415
-LocationCityPublicSchool201415
-LocationZIPPublicSchool201415
-TitleISchoolStatusPublicSchool201415
-LowestGradeOfferedPublicSchool201415
-HighestGradeOfferedPublicSchool201415
-District
-Grades912StudentsPublicSchool201415
