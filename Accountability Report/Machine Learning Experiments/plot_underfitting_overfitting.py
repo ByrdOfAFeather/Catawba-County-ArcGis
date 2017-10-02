@@ -38,7 +38,7 @@ def true_fun(X):
 np.random.seed(0)
 
 n_samples = 30
-degrees = [1, 2, 3, 6, 7, 15]
+degrees = [1000]
 
 X = np.sort(np.random.rand(n_samples))
 y = true_fun(X) + np.random.randn(n_samples) * 0.1
