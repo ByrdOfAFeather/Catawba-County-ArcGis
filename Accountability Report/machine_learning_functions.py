@@ -13,6 +13,8 @@ from sklearn.model_selection import GridSearchCV
 import pandas as pd
 import matplotlib.pyplot as plt 
 
+def NC_Database_gradient_booster_regressor(**kwargs): pass
+
 
 def NC_Database_Polynomial_Regressor(**kwargs):
 	'''Required Parameters in Kwargs: 

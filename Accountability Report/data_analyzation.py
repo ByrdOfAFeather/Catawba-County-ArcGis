@@ -20,6 +20,9 @@ from descartes import PolygonPatch
 import machine_learning_functions as omega
 
 
+# http://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_regression.html
+
+
 overall_dataframe = setup_dicts()[0]
 overall_grades = setup_dicts()[1]
 
