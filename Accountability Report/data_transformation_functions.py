@@ -80,6 +80,8 @@ def merge_dicts(*dict_args):
 
 
 def setup_dicts():
+    '''Gets schools by distrcit and combines them into 
+    an overall dataframe as well as a grade dictionary'''
     report = xlrd.open_workbook('Databases/acctsumm15.xlsx').sheet_by_index(0)
     northwest_schools = build_school_dict(report, 'Northwest') # form = {School: cellnumber}
     northwest_grades = build_grade_dict(report, northwest_schools) # form = {Math, bio, eng, school}
@@ -103,21 +105,31 @@ def setup_dicts():
 
 
 def removesection(frame, *args):
+    '''removes sections from a dataframe 
+    frame = dataframe 
+    *args = strings of columns that need to be removed
+
+    returns frame - edited version of frame'''
     for sections in args:
-        print(sections)
         frame.drop(frame[sections], axis=1, inplace=True)
     return frame
 
 
 def replace_item(frame, **kwargs):
+    '''Replaces items in a frame
+    frame = dataframe 
+    **kwargs = dictionary with key=original item=replacement'''
     for search, replace in kwargs.items():
-        print(search, replace)
         frame = frame.replace(search, replace)
     return frame
 
 
 
-def setup_NC_DATAFRAME(overall_grades, overall_dataframe):
+def setup_nc_dataframe(overall_grades, overall_dataframe):
+    '''Sets up NC_databse 
+    overall_grades = dictionary with grades attached to school names 
+    overall_dataframe = dataframe with schools attached to their data
+    overall_grades and overall_dataframe can be obtaned through setup_dicts()'''
     NC_database = pd.DataFrame.from_csv('Databases/NCLONGLAD.csv', encoding="utf-8")
     st_ratio = pd.DataFrame.from_csv('Databases/stratio.csv', encoding="utf-8")
     NC_database['StudentTeacherRatio'] = st_ratio['Pupil/Teacher Ratio [Public School] 2014-15'] 
@@ -126,7 +138,9 @@ def setup_NC_DATAFRAME(overall_grades, overall_dataframe):
     NC_database = NC_database.drop(NC_database[NC_database['exists'] == False].index)
     NC_database = pd.merge(left=NC_database, right=overall_dataframe, left_on='School Name [Public School] 2014-15', right_on='School Name')
     
-    replacements = {'â€'.decode('utf-8'): 'NaN', '†'.decode('utf-8'): 'NaN', '1-Yes': 1, '2-No': 0, '1-Regular school': 1, '2-Special education school': 2, '3-Vocational school': 3, '4-Alternative/other school': 4}
+    replacements = {'â€'.decode('utf-8'): 'NaN', '†'.decode('utf-8'): 'NaN', '1-Yes': 1, '2-No': 0, '1-Regular school': 1, '2-Special education school': 2, '3-Vocational school': 3, '4-Alternative/other school': 4,
+    '4-Eligible for Title I SWP provides no program': 4, '6-Not eligible for either TAS or SWP': 6, '5-Eligible for Title I SWP provides SWP program': 5, '1-Eligible for Title I TAS provides no program': 1, '3-Eligible for Title I SWP provides TAS program': 3,
+    '2-Eligible for Title I TAS provides TAS program': 2}
     NC_database = replace_item(NC_database, **replacements)
     NC_database = removesection(NC_database, ['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15', 'exists'])
     
@@ -141,4 +155,5 @@ def setup_NC_DATAFRAME(overall_grades, overall_dataframe):
         new_coloumns.append(columns.replace('-', '').replace(' ', '').replace('[', '').replace(']', '').replace('(', '').replace(')', ''))
 
     NC_database.columns = new_coloumns
+    print(NC_database.TitleISchoolStatusPublicSchool201415.unique())
     return NC_database

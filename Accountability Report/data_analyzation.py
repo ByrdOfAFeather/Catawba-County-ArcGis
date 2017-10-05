@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from data_transformation_functions import merge_dicts, build_school_dict, build_grade_dict, build_grade_dataframe, setup_dicts, setup_NC_DATAFRAME, removesection
+from data_classes import NC_database
 import plot_functions as custplt
 import matplotlib.pyplot as plt
 import numpy as np 
@@ -23,10 +23,13 @@ import machine_learning_functions as omega
 # http://scikit-learn.org/stable/auto_examples/ensemble/plot_gradient_boosting_regression.html
 
 
-overall_dataframe = setup_dicts()[0]
-overall_grades = setup_dicts()[1]
+params = dict(
+	file_name='Polynomial Regression With Degree {} and Alpha {} & Title I school features',
+ 	location='Graphs/Machine Learning/Polynomial Regression', 
+ 	yaxis='English Percent Passing', 
+ 	xaxis='School Encoded Value', 
+ 	title='Schools plotted against English Percent Passing with Polynomial Estimators',
+ 	alpha=50000)
 
-NC_database = setup_NC_DATAFRAME(overall_grades, overall_dataframe)
-params = dict(NC_database=NC_database, degree=6, alpha=6500, file_name='Polynomial Regression With Degree 6 and Alpha 1500', location='Graphs/Machine Learning/Polynomial Regression', yaxis='Math Percent Passing', xaxis='School Encoded Value', title='Schools plotted against Math Percent Passing with Polynomial Estimators')
-results = omega.NC_Database_Polynomial_Regressor(**params)
+results = omega.NC_Database_Polynomial_Regressor(NC_database().regression_setup(target_value='English', degree=7), **params)
 print(results)

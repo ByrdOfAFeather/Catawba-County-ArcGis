@@ -3,6 +3,11 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 
 def plot_schools(grade_dict, index_of_grade, yax, file_name=[]):
+	'''Plots school encoded values as a function of the grades
+	grade_dict = dictionary with school names and grades
+	index_of_grade = index of grade - math, bio, english 
+	yax = Name of the y-axes - math, bio, english
+	file_name = the name of the file that the image is saved as (optional)'''
 	fig = plt.figure(figsize=(16, 9))
 	labeler = LabelEncoder()
 	labeler = labeler.fit(list(grade_dict.keys()))
