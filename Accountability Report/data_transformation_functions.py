@@ -64,7 +64,6 @@ def build_grade_dataframe(report, school_dict):
             district_name_list.append(listitems[1])
             school_name_list.append(schools)
 
-
     dataframe = pd.DataFrame({'School': school_list, 'Math': math_list, 'Biology': bio_list, 'English': eng_list, 'District': district_name_list, 'School Name': school_name_list})
     dataframe.set_index(['School'], inplace=True)
     return dataframe
@@ -110,9 +109,10 @@ def removesection(frame, *args):
     *args = strings of columns that need to be removed
 
     returns frame - edited version of frame'''
+    dframe = frame
     for sections in args:
-        frame.drop(frame[sections], axis=1, inplace=True)
-    return frame
+        dframe = dframe.drop(frame[sections], axis=1)
+    return dframe
 
 
 def replace_item(frame, **kwargs):
@@ -122,7 +122,6 @@ def replace_item(frame, **kwargs):
     for search, replace in kwargs.items():
         frame = frame.replace(search, replace)
     return frame
-
 
 
 def setup_nc_dataframe(overall_grades, overall_dataframe):
@@ -155,5 +154,4 @@ def setup_nc_dataframe(overall_grades, overall_dataframe):
         new_coloumns.append(columns.replace('-', '').replace(' ', '').replace('[', '').replace(']', '').replace('(', '').replace(')', ''))
 
     NC_database.columns = new_coloumns
-    print(NC_database.TitleISchoolStatusPublicSchool201415.unique())
     return NC_database

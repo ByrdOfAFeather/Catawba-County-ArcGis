@@ -1,0 +1,19 @@
+What I need: 
+Where the school is: Done 
+What is around the school (Industry)
+Is the school techology based or not? 
+Student teacher ratio
+Percent with reduced lunch
+Test scores: Done
+
+--------------------------------------------------------------------------
+
+Otherwise: to what extent can latitiutde and longitude predict test scores?
+
+--------------------------------------------------------------------------
+
+Gradient Boosting Machine - Multiclass Classification, since 2 classes is scoring signifigiantly higher than expected 
+							Current idea: split scores into domains 1 - 25 and below, 2 - 25 < x < 50, 3 - 50 < x < 75, 4 - 75 < x < 95
+
+							Classifiy type of Title I school based on every other factor - should yield interesting results. 
+							
