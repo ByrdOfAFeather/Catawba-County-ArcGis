@@ -12,12 +12,22 @@ class NC_database:
 		self.overall_grades = self.overall[1]
 		self.database = setup_nc_dataframe(self.overall_grades, self.overall_dataframe)
 
-	def classification_setup(self, target_subject='Math', score_threshold=60):
+	def classification_setup(self, target_subject='Math', score_threshold=None):
 		'''Sets up the NC Database for classifcation based on input
 		target_subject = string - pandas dataframe column name 
 		score_threshold = integer - determines what becomes a 1 and what becomes a 0'''
-		self.database.loc[self.database[target_subject] < score_threshold, target_subject] = 0
-		self.database.loc[self.database[target_subject] >= score_threshold, target_subject] = 1
+		
+		if score_threshold:
+			self.database.loc[self.database[target_subject] < score_threshold, target_subject] = 0
+			self.database.loc[self.database[target_subject] >= score_threshold, target_subject] = 1
+		
+		else:
+			self.database[target_subject][(self.database[target_subject] < 25)] = 0
+			self.database[target_subject][(self.database[target_subject] >= 25) & (self.database[target_subject] < 50)] = 1
+			self.database[target_subject][(self.database[target_subject] >= 50) & (self.database[target_subject] < 75)] = 2
+			self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 80)] = 3
+			self.database[target_subject][(self.database[target_subject] >= 80) & (self.database[target_subject] <= 100)] = 4
+		
 		X_plot_encoder = LabelEncoder()
 		y = self.database[target_subject].values.astype(float)
 		X = removesection(self.database, ['Biology', 'Math', 'English', 'StateNamePublicSchoolLatestavailableyear', 'LocationAddress1PublicSchool201415', 
@@ -51,7 +61,7 @@ class NC_database:
 		X_plot_encoder = LabelEncoder()
 
 		X_without_school_names = removesection(X, ['SchoolNamePublicSchool201415'])
-		X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.8, random_state=225)
+		X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.7, random_state=225)
 
 		X_train.SchoolNamePublicSchool201415 = X_plot_encoder.fit_transform(X_train.SchoolNamePublicSchool201415)
 		school_encoded_train = X_train.SchoolNamePublicSchool201415.astype(int)
