@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np 
 import pandas as pd
 from sklearn import svm
-from sklearn.neural_network import MLPRegressor 
+from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.preprocessing import LabelEncoder, PolynomialFeatures, StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV, cross_val_score
 from sklearn.linear_model import Ridge
@@ -77,7 +77,7 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 	return cross_validation
 
 
-def nc_database_nerual_network(nc_data, **kwargs):
+def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	'''Nerual Network model for nc database'''
 	X = nc_data[0]
 	y = nc_data[1]
@@ -90,8 +90,10 @@ def nc_database_nerual_network(nc_data, **kwargs):
 
 	fig = plt.figure(figsize=(16, 9))
 	ax = fig.add_subplot(111)
-
-	ultra_k = MLPRegressor(hidden_layer_sizes=(500,), alpha=5000)
+	if classification:
+		ultra_k = MLPClassifier(hidden_layer_sizes=(100000,), alpha=1)
+	else:
+		ultra_k = MLPRegressor(hidden_layer_sizes=(100000,), alpha=5000)
 
 	ultra_k.fit(X_train, y_train)
 
@@ -116,8 +118,8 @@ def nc_database_nerual_network(nc_data, **kwargs):
 	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_test, y_test)), transform=ax.transAxes, verticalalignment='top', bbox=props)
 
 	plt.show()
-
-
+	cross_validation = cross_val_score(ultra_k, X, y, cv=9)
+	return cross_validation
 
 def nc_database_polynomial_regressor(nc_data, **kwargs):
 	'''Required Parameters in Kwargs: 

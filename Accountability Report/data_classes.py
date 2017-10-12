@@ -34,7 +34,7 @@ class NC_database:
 			'LocationCityPublicSchool201415', 'LocationZIPPublicSchool201415', 'TitleISchoolStatusPublicSchool201415', 'LowestGradeOfferedPublicSchool201415', 
 			'HighestGradeOfferedPublicSchool201415', 'District', 'Grades912StudentsPublicSchool201415'])
 		X_without_school_names = removesection(X, ['SchoolNamePublicSchool201415'])
-		X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.8, random_state=225530)
+		X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.7, random_state=225530)
 
 		X_train.SchoolNamePublicSchool201415 = X_plot_encoder.fit_transform(X_train.SchoolNamePublicSchool201415)
 		school_encoded_train = X_train.SchoolNamePublicSchool201415.astype(int)
