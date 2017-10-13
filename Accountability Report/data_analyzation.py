@@ -25,22 +25,22 @@ regression_params = dict(
  	yaxis='English Percent Passing', 
  	xaxis='School Encoded Value', 
  	title='Schools plotted against English Percent Passing with Polynomial Estimators',
- 	alpha=199000)
+ 	alpha=199000
+ 	)
 
 classification_params = dict(
 	learning_rate=1,
-	n_estimators=950,
+	n_estimators=900,
 	max_depth=1,
+	alpha=100,
 	file_name='',
 	location='',
 	yaxis='0 - < 25%, 1 - 25% < x < 35%, 2 - 35% < x < 45%, 3 - 45% < x < 50%, 4 - 75% < x < 80%, 5 - 80% < x < 100%',
 	xaxis='School Encoded Value',
-	title='Gradient Boosting Machine classifying schools into score-based tiers')
+	title='Gradient Boosting Machine classifying schools into score-based tiers'
+	)
 
 neural_network_classification_params = dict(
-	learning_rate=1,
-	n_estimators=950,
-	max_depth=1,
 	file_name='Neural Network - ',
 	location='Graphs/Machine Learning/Neural Network',
 	yaxis='0 - < 25%, 1 - 25% < x < 35%, 2 - 35% < x < 45%, 3 - 45% < x < 50%, 4 - 75% < x < 80%, 5 - 80% < x < 100%',
@@ -49,10 +49,10 @@ neural_network_classification_params = dict(
 	)
 
 gradient_boosting = omega.nc_database_gradient_booster_regressor(
-	NC_database().classification_setup(target_subject='Math'), **classification_params) 
+	NC_database().classification_setup(target_subject='English', score_threshold=50), **classification_params) 
 
 neural_network_classification = omega.nc_database_nerual_network(
-	NC_database().classification_setup(target_subject='Math'), classification=True, **neural_network_classification_params)
+	NC_database().classification_setup(target_subject='English', score_threshold=50), classification=True, **neural_network_classification_params)
 
 # neural_network_regression = omega.nc_database_nerual_network(
 # 	NC_database().regression_setup(target_subject='Math', degree=6), **regression_params)

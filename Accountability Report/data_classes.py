@@ -4,7 +4,18 @@ from sklearn.preprocessing import LabelEncoder, PolynomialFeatures, StandardScal
 from sklearn.model_selection import train_test_split 
 import inspect
 
-class NC_database:
+class database: 
+	def __init__(self, report='acctsumm15.xlsx'):
+		self.report = xlrd.open_workbook('Databases/{}'.format(report).sheet_by_index(0))
+
+	def classification_setup():
+		'''To be setup by child classes'''
+
+	def regression_setup():
+		'''To be setup by child classes'''
+
+
+class NC_database(database):
 	def __init__(self):
 		self.report = xlrd.open_workbook('Databases/acctsumm15.xlsx').sheet_by_index(0)
 		self.overall = setup_dicts()
