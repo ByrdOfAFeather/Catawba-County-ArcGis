@@ -36,14 +36,15 @@ class NC_database(database):
 			self.database[target_subject][(self.database[target_subject] < 25)] = 0
 			self.database[target_subject][(self.database[target_subject] >= 25) & (self.database[target_subject] < 50)] = 1
 			self.database[target_subject][(self.database[target_subject] >= 50) & (self.database[target_subject] < 75)] = 2
-			self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 80)] = 3
-			self.database[target_subject][(self.database[target_subject] >= 80) & (self.database[target_subject] <= 100)] = 4
+			self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 100)] = 3
 		
 		X_plot_encoder = LabelEncoder()
 		y = self.database[target_subject].values.astype(float)
 		X = removesection(self.database, ['Biology', 'Math', 'English', 'StateNamePublicSchoolLatestavailableyear', 'LocationAddress1PublicSchool201415', 
 			'LocationCityPublicSchool201415', 'LocationZIPPublicSchool201415', 'TitleISchoolStatusPublicSchool201415', 'LowestGradeOfferedPublicSchool201415', 
-			'HighestGradeOfferedPublicSchool201415', 'District', 'Grades912StudentsPublicSchool201415'])
+			'HighestGradeOfferedPublicSchool201415', 'District', 'Grades912StudentsPublicSchool201415',
+			'Grade12offeredPublicSchool201415','Grade11offeredPublicSchool201415', 
+			'Grade10offeredPublicSchool201415', 'Grade9offeredPublicSchool201415'])
 		X_without_school_names = removesection(X, ['SchoolNamePublicSchool201415'])
 		X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=.7, random_state=225530)
 
@@ -57,6 +58,11 @@ class NC_database(database):
 		school_encoded_test = X_test.SchoolNamePublicSchool201415
 		X_test = removesection(X_test, ['SchoolNamePublicSchool201415',])
 		X_test = ka.transform(X_test)
+		
+		try:
+			X.to_csv('Databases/classification.csv')
+		except IOError:
+			pass
 
 		return (X_without_school_names, y, X_train, school_encoded_train, y_train, X_test, school_encoded_test, y_test)
 
@@ -86,5 +92,6 @@ class NC_database(database):
 		X_test = removesection(X_test, ['SchoolNamePublicSchool201415',])
 		X_test = PolynomialFeatures(degree).fit_transform(X_test)
 		X_test = ka.transform(X_test)
-		
+	
+		X.to_csv('Databases/regression.csv')		
 		return (X_without_school_names, y, X_train, school_encoded_train, y_train, X_test, school_encoded_test, y_test)

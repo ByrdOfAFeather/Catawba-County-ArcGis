@@ -33,6 +33,7 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 
 	nemisis_k = GradientBoostingClassifier(learning_rate=kwargs['learning_rate'], n_estimators=kwargs['n_estimators'], max_depth=kwargs['max_depth']) 
 	nemisis_k.fit(X_train, y_train) 
+	cross_score= cross_val_score(nemisis_k, X, y, cv=6) 
 
 	plt.scatter(school_encoded_train, y_train, color='r') 
 	plt.scatter(school_encoded_train, nemisis_k.predict(X_train), color='b') 
@@ -43,7 +44,9 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 	 
 	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
 	ax.text(0.01, 0.026, 'Score = {}'.format(nemisis_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-
+	props = dict(boxstyle='round', facecolor='white', alpha=.5)
+	ax.text(0.01, .974, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
+	
 	if kwargs['file_name']: 
 		if kwargs['location']: 
 			plt.savefig('{}/{} Train'.format(kwargs['location'], kwargs['file_name']) + '.png') 
@@ -60,6 +63,8 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 
 	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
 	ax.text(0.01, 0.026, 'Score = {}'.format(nemisis_k.score(X_test, y_test)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
+	props = dict(boxstyle='round', facecolor='white', alpha=.5)
+	ax.text(0.01, .974, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
 	 
 	plt.title(kwargs['title']) 
 	plt.xlabel(kwargs['xaxis']) 
@@ -73,8 +78,8 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 
 	plt.show() 
 
-	cross_validation = cross_val_score(nemisis_k, X, y, cv=9) 
-	return cross_validation 
+
+	return cross_score
 
 
 def nc_database_nerual_network(nc_data, classification=None, **kwargs): 
@@ -91,7 +96,7 @@ def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	fig = plt.figure(figsize=(16, 9)) 
 	ax = fig.add_subplot(111) 
 	if classification: 
-		ultra_k = MLPClassifier(hidden_layer_sizes=(100000,), alpha=6) 
+		ultra_k = MLPClassifier(hidden_layer_sizes=(100000,)) 
 	else: 
 		ultra_k = MLPRegressor(hidden_layer_sizes=(100000,), alpha=5000) 
 
@@ -100,9 +105,21 @@ def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	plt.scatter(school_encoded_train, y_train) 
 	plt.scatter(school_encoded_train, ultra_k.predict(X_train)) 
 
+	# Graphs Cross Validation and Score
+	cross_score = cross_val_score(ultra_k, X, y, cv=6) 
 	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
 	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
+	props = dict(boxstyle='round', facecolor='white', alpha=.5)
+	ax.text(0.01, .974, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
+	plt.title(kwargs['title']) 
+	plt.xlabel(kwargs['xaxis']) 
+	plt.ylabel(kwargs['yaxis']) 
 
+	if kwargs['file_name']:
+		if kwargs['location']:
+			plt.savefig('{}/{} train'.format(kwargs['location'], kwargs['file_name']) + '.png')
+		else:
+			plt.savefig('Graphs/{} train'.format(kwargs['file_name']) + '.png')
 	plt.show() 
 
 	fig = plt.figure(figsize=(16, 9)) 
@@ -112,11 +129,21 @@ def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	plt.scatter(school_encoded_test, ultra_k.predict(X_test)) 
 
 	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_test, y_test)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
+	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
+	props = dict(boxstyle='round', facecolor='white', alpha=.5)
+	ax.text(0.01, 1, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
+	plt.title(kwargs['title']) 
+	plt.xlabel(kwargs['xaxis']) 
+	plt.ylabel(kwargs['yaxis']) 
 
+	if kwargs['file_name']:
+		if kwargs['location']:
+			plt.savefig('{}/{} test'.format(kwargs['location'], kwargs['file_name']) + '.png')
+		else:
+			plt.savefig('Graphs/{} test'.format(kwargs['file_name']) + '.png')
+	
 	plt.show() 
-	cross_validation = cross_val_score(ultra_k, X, y, cv=9) 
-	return cross_validation 
+	return cross_score 
 
 def nc_database_polynomial_regressor(nc_data, **kwargs): 
 	'''Required Parameters in Kwargs:  

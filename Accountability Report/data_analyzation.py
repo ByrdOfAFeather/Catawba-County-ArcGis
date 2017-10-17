@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import plot_functions as custplt
 import matplotlib.pyplot as plt
 import numpy as np 
 import pandas as pd
@@ -18,7 +17,6 @@ from data_classes import NC_database
 from pandas.tools.plotting import scatter_matrix
 from mpl_toolkits.mplot3d import Axes3D
 
-
 regression_params = dict(
 	file_name='Polynomial Regression With Degree {} and Alpha {} & Title I school features',
  	location='Graphs/Machine Learning/Polynomial Regression', 
@@ -33,15 +31,15 @@ classification_params = dict(
 	n_estimators=900,
 	max_depth=1,
 	alpha=100,
-	file_name='',
-	location='',
+	file_name='Gradient Machine Without Longitude or Latitude learning rate 1 n_estimators 900 max_depth 1 alpha 100',
+	location='Graphs/Machine Learning/Gradient Boosted Machine/Vs Nerual Network',
 	yaxis='0 - < 25%, 1 - 25% < x < 35%, 2 - 35% < x < 45%, 3 - 45% < x < 50%, 4 - 75% < x < 80%, 5 - 80% < x < 100%',
 	xaxis='School Encoded Value',
 	title='Gradient Boosting Machine classifying schools into score-based tiers'
 	)
 
 neural_network_classification_params = dict(
-	file_name='Neural Network - ',
+	file_name='Neural Network without Without Longitude or Latitude hidden_layer_sizes 100000 alpha=.01 ',
 	location='Graphs/Machine Learning/Neural Network',
 	yaxis='0 - < 25%, 1 - 25% < x < 35%, 2 - 35% < x < 45%, 3 - 45% < x < 50%, 4 - 75% < x < 80%, 5 - 80% < x < 100%',
 	xaxis='School Encoded Value',
@@ -49,10 +47,10 @@ neural_network_classification_params = dict(
 	)
 
 gradient_boosting = omega.nc_database_gradient_booster_regressor(
-	NC_database().classification_setup(target_subject='English', score_threshold=50), **classification_params) 
+	NC_database().classification_setup(target_subject='Math',), **classification_params) 
 
 neural_network_classification = omega.nc_database_nerual_network(
-	NC_database().classification_setup(target_subject='English', score_threshold=50), classification=True, **neural_network_classification_params)
+	NC_database().classification_setup(target_subject='Math',), classification=True, **neural_network_classification_params)
 
 # neural_network_regression = omega.nc_database_nerual_network(
 # 	NC_database().regression_setup(target_subject='Math', degree=6), **regression_params)

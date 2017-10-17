@@ -137,8 +137,11 @@ def setup_nc_dataframe(overall_grades, overall_dataframe):
     NC_database = NC_database.drop(NC_database[NC_database['exists'] == False].index)
     NC_database = pd.merge(left=NC_database, right=overall_dataframe, left_on='School Name [Public School] 2014-15', right_on='School Name')
     
-    replacements = {'â€'.decode('utf-8'): 'NaN', '†'.decode('utf-8'): 'NaN', '1-Yes': 1, '2-No': 0, '1-Regular school': 1, '2-Special education school': 2, '3-Vocational school': 3, '4-Alternative/other school': 4,
-    '4-Eligible for Title I SWP provides no program': 4, '6-Not eligible for either TAS or SWP': 6, '5-Eligible for Title I SWP provides SWP program': 5, '1-Eligible for Title I TAS provides no program': 1, '3-Eligible for Title I SWP provides TAS program': 3,
+    replacements = {'â€'.decode('utf-8'): 'NaN', '†'.decode('utf-8'): 'NaN', '1-Yes': 1, '2-No': 0, 
+    '1-Regular school': 1, '2-Special education school': 2, '3-Vocational school': 3, '4-Alternative/other school': 4,
+    '4-Eligible for Title I SWP provides no program': 4, '6-Not eligible for either TAS or SWP': 6, 
+    '5-Eligible for Title I SWP provides SWP program': 5, '1-Eligible for Title I TAS provides no program': 1, 
+    '3-Eligible for Title I SWP provides TAS program': 3,
     '2-Eligible for Title I TAS provides TAS program': 2}
     NC_database = replace_item(NC_database, **replacements)
     NC_database = removesection(NC_database, ['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15', 'exists'])
