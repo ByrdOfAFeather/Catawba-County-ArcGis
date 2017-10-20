@@ -92,6 +92,10 @@ class NC_database(database):
 		X_test = removesection(X_test, ['SchoolNamePublicSchool201415',])
 		X_test = PolynomialFeatures(degree).fit_transform(X_test)
 		X_test = ka.transform(X_test)
-	
-		X.to_csv('Databases/regression.csv')		
+		
+		try:
+			X.to_csv('Databases/regression.csv')
+		except IOError:
+			pass		
+		
 		return (X_without_school_names, y, X_train, school_encoded_train, y_train, X_test, school_encoded_test, y_test)

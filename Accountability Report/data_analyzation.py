@@ -16,6 +16,7 @@ from sklearn.model_selection import GridSearchCV
 from data_classes import NC_database
 from pandas.tools.plotting import scatter_matrix
 from mpl_toolkits.mplot3d import Axes3D
+from web_scrapping import get_reduced_lunch
 
 regression_params = dict(
 	file_name='Polynomial Regression With Degree {} and Alpha {} & Title I school features',
@@ -46,11 +47,15 @@ neural_network_classification_params = dict(
 	title='Neural Network classifying schools into score-based tiers'
 	)
 
+db = NC_database()
+db.database = get_reduced_lunch(db)
+
+
 gradient_boosting = omega.nc_database_gradient_booster_regressor(
-	NC_database().classification_setup(target_subject='Math',), **classification_params) 
+	db.classification_setup(target_subject='Math',), **classification_params) 
 
 neural_network_classification = omega.nc_database_nerual_network(
-	NC_database().classification_setup(target_subject='Math',), classification=True, **neural_network_classification_params)
+	db.classification_setup(target_subject='Math',), classification=True, **neural_network_classification_params)
 
 # neural_network_regression = omega.nc_database_nerual_network(
 # 	NC_database().regression_setup(target_subject='Math', degree=6), **regression_params)
