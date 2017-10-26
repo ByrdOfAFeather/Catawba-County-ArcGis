@@ -125,36 +125,5 @@ def replace_item(frame, **kwargs):
 
 
 def setup_nc_dataframe(overall_grades, overall_dataframe):
-    '''Sets up NC_databse 
-    overall_grades = dictionary with grades attached to school names 
-    overall_dataframe = dataframe with schools attached to their data
-    overall_grades and overall_dataframe can be obtaned through setup_dicts()'''
-    NC_database = pd.DataFrame.from_csv('Databases/NCLONGLAD.csv', encoding="utf-8")
-    st_ratio = pd.DataFrame.from_csv('Databases/stratio.csv', encoding="utf-8")
-    NC_database['StudentTeacherRatio'] = st_ratio['Pupil/Teacher Ratio [Public School] 2014-15'] 
-
-    NC_database['exists'] = NC_database['School Name [Public School] 2014-15'].isin(overall_grades.keys())
-    NC_database = NC_database.drop(NC_database[NC_database['exists'] == False].index)
-    NC_database = pd.merge(left=NC_database, right=overall_dataframe, left_on='School Name [Public School] 2014-15', right_on='School Name')
-    
-    replacements = {'â€'.decode('utf-8'): 'NaN', '†'.decode('utf-8'): 'NaN', '1-Yes': 1, '2-No': 0, 
-    '1-Regular school': 1, '2-Special education school': 2, '3-Vocational school': 3, '4-Alternative/other school': 4,
-    '4-Eligible for Title I SWP provides no program': 4, '6-Not eligible for either TAS or SWP': 6, 
-    '5-Eligible for Title I SWP provides SWP program': 5, '1-Eligible for Title I TAS provides no program': 1, 
-    '3-Eligible for Title I SWP provides TAS program': 3,
-    '2-Eligible for Title I TAS provides TAS program': 2}
-    NC_database = replace_item(NC_database, **replacements)
-    NC_database = removesection(NC_database, ['Location Address 3 [Public School] 2014-15', 'Location Address 2 [Public School] 2014-15', 'School Name', 'Location ZIP4 [Public School] 2014-15', 'exists'])
-    
-    
-    NC_database['Grades 9-12 Students [Public School] 2014-15'] = NC_database['Grades 9-12 Students [Public School] 2014-15'].replace('NaN', 999999)
-    NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'] = NC_database['Total Students All Grades (Excludes AE) [Public School] 2014-15'].replace('NaN', 999999)
-    NC_database['Latitude [Public School] 2014-15'] = NC_database['Latitude [Public School] 2014-15'].replace('NaN', 99999)
-    NC_database['Longitude [Public School] 2014-15'] = NC_database['Longitude [Public School] 2014-15'].replace('NaN', 99999)
-
-    new_coloumns = []
-    for columns in NC_database.columns.values:
-        new_coloumns.append(columns.replace('-', '').replace(' ', '').replace('[', '').replace(']', '').replace('(', '').replace(')', ''))
-
-    NC_database.columns = new_coloumns
+    NC_database = pd.DataFrame.from_csv('Databases/scrape.csv')
     return NC_database

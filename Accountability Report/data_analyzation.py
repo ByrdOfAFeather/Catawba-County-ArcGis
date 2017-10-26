@@ -32,33 +32,29 @@ classification_params = dict(
 	n_estimators=900,
 	max_depth=1,
 	alpha=100,
-	file_name='Gradient Machine Without Longitude or Latitude learning rate 1 n_estimators 900 max_depth 1 alpha 100',
+	file_name='Gradient Machine With web scraping learning_rate 1 n_estimators 100 max_depth 1 alpha 100',
 	location='Graphs/Machine Learning/Gradient Boosted Machine/Vs Nerual Network',
-	yaxis='0 - < 25%, 1 - 25% < x < 35%, 2 - 35% < x < 45%, 3 - 45% < x < 50%, 4 - 75% < x < 80%, 5 - 80% < x < 100%',
+	yaxis='0 - < 25%, 1 - 25% <= x < 50%, 2 - 50% <= x < 75%, 3 - 75% <= x <= 100%',
 	xaxis='School Encoded Value',
 	title='Gradient Boosting Machine classifying schools into score-based tiers'
 	)
 
 neural_network_classification_params = dict(
-	file_name='Neural Network without Without Longitude or Latitude hidden_layer_sizes 100000 alpha=.01 ',
+	file_name='Neural Network with web scraping hidden_layer_size 690',
 	location='Graphs/Machine Learning/Neural Network',
-	yaxis='0 - < 25%, 1 - 25% < x < 35%, 2 - 35% < x < 45%, 3 - 45% < x < 50%, 4 - 75% < x < 80%, 5 - 80% < x < 100%',
+	yaxis='0 - < 25%, 1 - 25% <= x < 50%, 2 - 50% <= x < 75%, 3 - 75% <= x <= 100%',
 	xaxis='School Encoded Value',
 	title='Neural Network classifying schools into score-based tiers'
 	)
 
-db = NC_database()
-db.database = get_reduced_lunch(db)
-
-
 gradient_boosting = omega.nc_database_gradient_booster_regressor(
-	db.classification_setup(target_subject='Math',), **classification_params) 
+  	NC_database().classification_setup(target_subject='English',), **classification_params) 
 
 neural_network_classification = omega.nc_database_nerual_network(
-	db.classification_setup(target_subject='Math',), classification=True, **neural_network_classification_params)
+	NC_database().classification_setup(target_subject='English',), classification=True, **neural_network_classification_params)
 
 # neural_network_regression = omega.nc_database_nerual_network(
-# 	NC_database().regression_setup(target_subject='Math', degree=6), **regression_params)
+#  	NC_database().regression_setup(target_subject='Math', degree=2), **regression_params)
 
 print(gradient_boosting.mean(), gradient_boosting.std() * 2)
 print(neural_network_classification.mean(), neural_network_classification.std() * 2)

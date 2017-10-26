@@ -33,7 +33,7 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 
 	nemisis_k = GradientBoostingClassifier(learning_rate=kwargs['learning_rate'], n_estimators=kwargs['n_estimators'], max_depth=kwargs['max_depth']) 
 	nemisis_k.fit(X_train, y_train) 
-	cross_score= cross_val_score(nemisis_k, X, y, cv=6) 
+	cross_score= cross_val_score(nemisis_k, X, y, cv=4) 
 
 	plt.scatter(school_encoded_train, y_train, color='r') 
 	plt.scatter(school_encoded_train, nemisis_k.predict(X_train), color='b') 
@@ -96,9 +96,9 @@ def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	fig = plt.figure(figsize=(16, 9)) 
 	ax = fig.add_subplot(111) 
 	if classification: 
-		ultra_k = MLPClassifier(hidden_layer_sizes=(100000,)) 
+		ultra_k = MLPClassifier(hidden_layer_sizes=(690,)) 
 	else: 
-		ultra_k = MLPRegressor(hidden_layer_sizes=(100000,), alpha=5000) 
+		ultra_k = MLPRegressor() 
 
 	ultra_k.fit(X_train, y_train) 
 
@@ -106,7 +106,7 @@ def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	plt.scatter(school_encoded_train, ultra_k.predict(X_train)) 
 
 	# Graphs Cross Validation and Score
-	cross_score = cross_val_score(ultra_k, X, y, cv=6) 
+	cross_score = cross_val_score(ultra_k, X, y, cv=4) 
 	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
 	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
 	props = dict(boxstyle='round', facecolor='white', alpha=.5)

@@ -1,6 +1,7 @@
 
 from bs4 import BeautifulSoup as bs
 from data_classes import NC_database
+import pandas as pd
 import urllib2 as url
 import requests as re 
 # <input type="text" name="InstName" size="36"> 
@@ -46,7 +47,8 @@ def get_reduced_lunch(NC_DataFrame):
 			link = result.find(text=names.lower()).find_parent('a', href=True)
 		elif result.find(text=names):
 			link = result.find(text=names).find_parent('a', href=True)
-		else: continue
+		else:
+			NC_DataFrame.database = NC_DataFrame.database.drop(NC_DataFrame.database[NC_DataFrame.database['SchoolNamePublicSchool201415'] == names].index)
 		
 		stats_page = base_link + link['href']
 		stats_page = bs(re.get(stats_page).content, 'lxml')
@@ -60,16 +62,28 @@ def get_reduced_lunch(NC_DataFrame):
 			print('UNICODE ERROR')
 		
 		try:
-			NC_DataFrame.database.loc[NC_DataFrame.database.SchoolNamePublicSchool201415==names, 'Reduced_lunch'] = int(reduced_lunch)
+			NC_DataFrame.database.loc[NC_DataFrame.database.SchoolNamePublicSchool201415==names, 'Reduced Lunch'] = int(reduced_lunch)
 			NC_DataFrame.database.loc[NC_DataFrame.database.SchoolNamePublicSchool201415==names, 'Free Lunch'] = int(free_lunch)
-			NC_DataFrame.database.loc[NC_DataFrame.database.SchoolNamePublicSchool201415==names, 'Percent Lunch'] = float( ( int(free_lunch) + int(reduced_lunch) ) / ( int(NC_DataFrame.database.loc[NC_DataFrame.database.SchoolNamePublicSchool201415==names, 'TotalStudentsAllGradesExcludesAEPublicSchool201415'] ) )) 
+			try:
+				NC_DataFrame.database.loc[NC_DataFrame.database.SchoolNamePublicSchool201415==names, 'Percent Lunch'] = float( 
+					( float(free_lunch) + float(reduced_lunch) ) /
+				 	( float(NC_DataFrame.database.loc[
+				 		NC_DataFrame.database.SchoolNamePublicSchool201415==names, 
+				 		'TotalStudentsAllGradesExcludesAEPublicSchool201415']) 
+				 	)
+				 	)
+			except TypeError:
+				NC_DataFrame.database = NC_DataFrame.database[NC_DataFrame.database.SchoolNamePublicSchool201415 != names]
+
 		except UnicodeEncodeError:
 			print('UNICODE ERROR')
 			pass
 
-
+	NC_DataFrame.database['Free Lunch'] = pd.to_numeric(NC_DataFrame.database['Free Lunch'])
+	NC_DataFrame.database['Reduced Lunch'] = pd.to_numeric(NC_DataFrame.database['Reduced Lunch'])
+	NC_DataFrame.database['Percent Lunch'] = pd.to_numeric(NC_DataFrame.database['Percent Lunch'])
 	NC_DataFrame.database.to_csv('Databases/scrape.csv')
-	return NC_DataFrame
+	return NC_DataFrame.database
 
 
 # https://nces.ed.gov/ccd/schoolsearch/school_list.asp?City=&Search=1&SchoolID=&SchoolType=4&Zip=&DistrictID=&LoGrade=-1&DistrictName=&HiGrade=-1&SpecificSchlTypes=all&InstName=Chatham+Charter&County=&Phone=&State=&Miles=&IncGrade=-1&Address=&PhoneAreaCode=
