@@ -32,26 +32,26 @@ classification_params = dict(
 	n_estimators=900,
 	max_depth=1,
 	alpha=100,
-	file_name='Gradient Machine With web scraping learning_rate 1 n_estimators 100 max_depth 1 alpha 100',
-	location='Graphs/Machine Learning/Gradient Boosted Machine/Vs Nerual Network',
-	yaxis='0 - < 25%, 1 - 25% <= x < 50%, 2 - 50% <= x < 75%, 3 - 75% <= x <= 100%',
-	xaxis='School Encoded Value',
+	file_name='ENGLISH 2 CLASSES - 2nd test Gradient Machine With web scraping learning_rate 1 n_estimators 900 max_depth 1 alpha 100',
+	location='Graphs/Machine Learning/Gradient Boosted Machine/',
+	xaxis='0 - x < 60%, 1 - x >= 60%',
+	yaxis='School Encoded Value',
 	title='Gradient Boosting Machine classifying schools into score-based tiers'
 	)
 
 neural_network_classification_params = dict(
-	file_name='Neural Network with web scraping hidden_layer_size 690',
+	file_name='ENGLISH 2 CLSSES - 2nd test Neural Network hidden_layer_size 690',
 	location='Graphs/Machine Learning/Neural Network',
-	yaxis='0 - < 25%, 1 - 25% <= x < 50%, 2 - 50% <= x < 75%, 3 - 75% <= x <= 100%',
-	xaxis='School Encoded Value',
+	xaxis='0 - x < 60%, 1 - x >= 60%',
+	yaxis='School Encoded Value',
 	title='Neural Network classifying schools into score-based tiers'
 	)
 
 gradient_boosting = omega.nc_database_gradient_booster_regressor(
-  	NC_database().classification_setup(target_subject='English',), **classification_params) 
+  	NC_database().classification_setup(target_subject='English', score_threshold=60), **classification_params) 
 
 neural_network_classification = omega.nc_database_nerual_network(
-	NC_database().classification_setup(target_subject='English',), classification=True, **neural_network_classification_params)
+	NC_database().classification_setup(target_subject='English', score_threshold=60), classification=True, **neural_network_classification_params)
 
 # neural_network_regression = omega.nc_database_nerual_network(
 #  	NC_database().regression_setup(target_subject='Math', degree=2), **regression_params)

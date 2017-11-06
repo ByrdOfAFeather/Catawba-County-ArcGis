@@ -33,11 +33,32 @@ class NC_database(database):
 			self.database.loc[self.database[target_subject] >= score_threshold, target_subject] = 1
 		
 		else:
-			self.database[target_subject][(self.database[target_subject] < 25)] = 0
-			self.database[target_subject][(self.database[target_subject] >= 25) & (self.database[target_subject] < 50)] = 1
-			self.database[target_subject][(self.database[target_subject] >= 50) & (self.database[target_subject] < 75)] = 2
-			self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 100)] = 3
-		
+			# 8 classes
+			self.database[target_subject][(self.database[target_subject] < 14)] = 0
+			self.database[target_subject][(self.database[target_subject] >= 14) & (self.database[target_subject] < 25)] = 1
+			self.database[target_subject][(self.database[target_subject] >= 25) & (self.database[target_subject] < 37)] = 2
+			self.database[target_subject][(self.database[target_subject] >= 37) & (self.database[target_subject] < 50)] = 3
+			self.database[target_subject][(self.database[target_subject] >= 50) & (self.database[target_subject] < 63)] = 4
+			self.database[target_subject][(self.database[target_subject] >= 63) & (self.database[target_subject] < 75)] = 5
+			self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 87.5)] = 6
+			self.database[target_subject][(self.database[target_subject] >= 87.5) & (self.database[target_subject] < 100)] = 7
+			
+
+			# 7 Classes
+			# self.database[target_subject][(self.database[target_subject] < 25)] = 0
+			# self.database[target_subject][(self.database[target_subject] >= 25) & (self.database[target_subject] < 37)] = 1
+			# self.database[target_subject][(self.database[target_subject] >= 37) & (self.database[target_subject] < 50)] = 2
+			# self.database[target_subject][(self.database[target_subject] >= 50) & (self.database[target_subject] < 63)] = 3
+			# self.database[target_subject][(self.database[target_subject] >= 63) & (self.database[target_subject] < 75)] = 4
+			# self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 87.5)] = 5
+			# self.database[target_subject][(self.database[target_subject] >= 87.5) & (self.database[target_subject] < 100)] = 6
+			
+			# self.database[target_subject][(self.database[target_subject] < 25)] = 0
+			# self.database[target_subject][(self.database[target_subject] >= 25) & (self.database[target_subject] < 50)] = 1
+			# self.database[target_subject][(self.database[target_subject] >= 50) & (self.database[target_subject] < 75)] = 2
+			# self.database[target_subject][(self.database[target_subject] >= 75) & (self.database[target_subject] < 100)] = 3
+
+
 		X_plot_encoder = LabelEncoder()
 		y = self.database[target_subject].values.astype(float)
 		X = removesection(self.database, ['Biology', 'Math', 'English', 'StateNamePublicSchoolLatestavailableyear', 'LocationAddress1PublicSchool201415', 

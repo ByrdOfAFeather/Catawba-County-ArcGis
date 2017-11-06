@@ -12,15 +12,44 @@ from sklearn.linear_model import Ridge
 from sklearn.dummy import DummyRegressor 
 from sklearn.ensemble import GradientBoostingClassifier  
 
+def plot_data(predictions, x_values, y_values, title, 
+	y, x, score, cross_val_score, file_name, location,
+	test=False):
+	
+	fig = plt.figure(figsize=(16, 9)) 
+	ax = fig.add_subplot(111) 
+
+	plt.scatter(x_values, y_values, color='r') 
+	plt.scatter(x_values, predictions, color='b') 
+	plt.title(title)
+	plt.ylabel(y)
+	plt.xlabel(x)
+
+	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
+	ax.text(0.01, 0.026, 'Score = {}'.format(score), transform=ax.transAxes, verticalalignment='top', bbox=props) 
+	props = dict(boxstyle='round', facecolor='white', alpha=.5)
+	ax.text(0.01, .974, 
+		'Cross Validation Score = {}, Cross Validation Error = {}'.format(
+			cross_val_score.mean(),
+			 cross_val_score.std() * 2
+			 ),  
+		transform=ax.transAxes, verticalalignment='top', bbox=props)
+	if file_name: 
+		if location: 
+			if test: plt.savefig('{}/{} Test'.format(location, file_name) + '.png') 
+			else: plt.savefig('{}/{} Train'.format(location, file_name) + '.png') 
+		else: 
+			if test: plt.savefig('Graphs/{} Test'.format(file_name) + '.png') 
+			else: plt.savefig('Graphs/{} Train'.format(file_name) + '.png') 
+	plt.show() 
+
+
 def nc_database_gradient_booster_regressor(nc_data, **kwargs): 
 	''' Returns graphs based onthe nc_database and a gradient booster machine  
 	nc_data - nc database 
 	**kwargs: 
 	REQUIRED - Title - String , xaxis - String, yaxis - String  
 	OPTIONAL - file_name - String, location - String''' 
-
-	fig = plt.figure(figsize=(16, 9)) 
-	ax = fig.add_subplot(111) 
 
 	X = nc_data[0] 
 	y = nc_data[1] 
@@ -31,53 +60,21 @@ def nc_database_gradient_booster_regressor(nc_data, **kwargs):
 	school_encoded_test = nc_data[6] 
 	y_test = nc_data[7] 
 
-	nemisis_k = GradientBoostingClassifier(learning_rate=kwargs['learning_rate'], n_estimators=kwargs['n_estimators'], max_depth=kwargs['max_depth']) 
-	nemisis_k.fit(X_train, y_train) 
-	cross_score= cross_val_score(nemisis_k, X, y, cv=4) 
+	model = GradientBoostingClassifier(learning_rate=kwargs['learning_rate'], n_estimators=kwargs['n_estimators'], max_depth=kwargs['max_depth']) 
+	model.fit(X_train, y_train) 
+	cross_score= cross_val_score(model, X, y, cv=4) 
 
-	plt.scatter(school_encoded_train, y_train, color='r') 
-	plt.scatter(school_encoded_train, nemisis_k.predict(X_train), color='b') 
+	plot_data(model.predict(X_train), school_encoded_train, y_train, kwargs['title'], 
+		kwargs['xaxis'], kwargs['yaxis'], 
+		model.score(X_train, y_train), 
+		cross_score, kwargs['file_name'], 
+		kwargs['location'])	 
 
-	plt.title(kwargs['title']) 
-	plt.xlabel(kwargs['xaxis']) 
-	plt.ylabel(kwargs['yaxis']) 
-	 
-	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(nemisis_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-	props = dict(boxstyle='round', facecolor='white', alpha=.5)
-	ax.text(0.01, .974, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
-	
-	if kwargs['file_name']: 
-		if kwargs['location']: 
-			plt.savefig('{}/{} Train'.format(kwargs['location'], kwargs['file_name']) + '.png') 
-		else: 
-			plt.savefig('Graphs/{}'.format(kwargs['file_name']) + '.png') 
-	 
-	plt.show() 
-
-	fig = plt.figure(figsize=(16, 9)) 
-	ax = fig.add_subplot(111) 
-
-	plt.scatter(school_encoded_test, y_test, color='g') 
-	plt.scatter(school_encoded_test, nemisis_k.predict(X_test), color='y') 
-
-	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(nemisis_k.score(X_test, y_test)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-	props = dict(boxstyle='round', facecolor='white', alpha=.5)
-	ax.text(0.01, .974, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
-	 
-	plt.title(kwargs['title']) 
-	plt.xlabel(kwargs['xaxis']) 
-	plt.ylabel(kwargs['yaxis']) 
-	 
-	if kwargs['file_name']: 
-		if kwargs['location']: 
-			plt.savefig('{}/{} Test'.format(kwargs['location'], kwargs['file_name']) + '.png') 
-		else: 
-			plt.savefig('Graphs/{}'.format(kwargs['file_name']) + '.png') 
-
-	plt.show() 
-
+	plot_data(model.predict(X_test), school_encoded_test, y_test, kwargs['title'], 
+		kwargs['xaxis'], kwargs['yaxis'], 
+		model.score(X_test, y_test), 
+		cross_score, kwargs['file_name'],
+		kwargs['location'], test=True)	 
 
 	return cross_score
 
@@ -92,58 +89,30 @@ def nc_database_nerual_network(nc_data, classification=None, **kwargs):
 	X_test = nc_data[5] 
 	school_encoded_test = nc_data[6] 
 	y_test = nc_data[7] 
-
-	fig = plt.figure(figsize=(16, 9)) 
-	ax = fig.add_subplot(111) 
 	if classification: 
-		ultra_k = MLPClassifier(hidden_layer_sizes=(690,)) 
+		model = MLPClassifier(hidden_layer_sizes=(690,)) 
 	else: 
-		ultra_k = MLPRegressor() 
+		model = MLPRegressor() 
 
-	ultra_k.fit(X_train, y_train) 
-
-	plt.scatter(school_encoded_train, y_train) 
-	plt.scatter(school_encoded_train, ultra_k.predict(X_train)) 
+	model.fit(X_train, y_train) 
 
 	# Graphs Cross Validation and Score
-	cross_score = cross_val_score(ultra_k, X, y, cv=4) 
-	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-	props = dict(boxstyle='round', facecolor='white', alpha=.5)
-	ax.text(0.01, .974, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
-	plt.title(kwargs['title']) 
-	plt.xlabel(kwargs['xaxis']) 
-	plt.ylabel(kwargs['yaxis']) 
-
-	if kwargs['file_name']:
-		if kwargs['location']:
-			plt.savefig('{}/{} train'.format(kwargs['location'], kwargs['file_name']) + '.png')
-		else:
-			plt.savefig('Graphs/{} train'.format(kwargs['file_name']) + '.png')
-	plt.show() 
-
-	fig = plt.figure(figsize=(16, 9)) 
-	ax = fig.add_subplot(111) 
-
-	plt.scatter(school_encoded_test, y_test) 
-	plt.scatter(school_encoded_test, ultra_k.predict(X_test)) 
-
-	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(ultra_k.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-	props = dict(boxstyle='round', facecolor='white', alpha=.5)
-	ax.text(0.01, 1, 'Cross Validation Score = {}, Cross Validation Error = {}'.format(cross_score.mean(), cross_score.std() * 2),  transform=ax.transAxes, verticalalignment='top', bbox=props)
-	plt.title(kwargs['title']) 
-	plt.xlabel(kwargs['xaxis']) 
-	plt.ylabel(kwargs['yaxis']) 
-
-	if kwargs['file_name']:
-		if kwargs['location']:
-			plt.savefig('{}/{} test'.format(kwargs['location'], kwargs['file_name']) + '.png')
-		else:
-			plt.savefig('Graphs/{} test'.format(kwargs['file_name']) + '.png')
+	cross_score = cross_val_score(model, X, y, cv=4) 
 	
-	plt.show() 
+	plot_data(model.predict(X_train), school_encoded_train, y_train, kwargs['title'], 
+		kwargs['xaxis'], kwargs['yaxis'], 
+		model.score(X_train, y_train), 
+		cross_score, kwargs['file_name'],
+		kwargs['location'])
+
+	plot_data(model.predict(X_test), school_encoded_test, y_test, kwargs['title'], 
+		kwargs['xaxis'], kwargs['yaxis'], 
+		model.score(X_test, y_test), 
+		cross_score, kwargs['file_name'],
+		kwargs['location'], test=True)
+
 	return cross_score 
+
 
 def nc_database_polynomial_regressor(nc_data, **kwargs): 
 	'''Required Parameters in Kwargs:  
@@ -160,50 +129,21 @@ def nc_database_polynomial_regressor(nc_data, **kwargs):
 	school_encoded_test = nc_data[6] 
 	y_test = nc_data[7] 
 
-	ma = Ridge(alpha=kwargs['alpha']) 
-	ma.fit(X_train, y_train) 
+	model = Ridge(alpha=kwargs['alpha']) 
+	model.fit(X_train, y_train)
 
-	fig = plt.figure(figsize=(16, 9)) 
-	ax = fig.add_subplot(111) 
+	cross_score = cross_val_score(model, X, y)
 
-	plt.scatter(school_encoded_train, y_train) 
-	plt.scatter(school_encoded_train, ma.predict(X_train)) 
-
-	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(ma.score(X_train, y_train)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-
-	plt.title(kwargs['title']) 
-	plt.xlabel(kwargs['xaxis']) 
-	plt.ylabel(kwargs['yaxis']) 
-
-	if kwargs['file_name']: 
-		if kwargs['location']: 
-			plt.savefig('{}/{} Train'.format(kwargs['location'], kwargs['file_name']) + '.png') 
-		else: 
-			plt.savefig('Graphs/{}'.format(kwargs['file_name']) + '.png') 
-
-	cross_validation = cross_val_score(ma, X, y) 
-	plt.show() 
-	 
-	fig = plt.figure(figsize=(16, 9)) 
-	ax = fig.add_subplot(111) 
-
-	plt.scatter(school_encoded_test, y_test) 
-	plt.scatter(school_encoded_test, ma.predict(X_test)) 
-
-	props = dict(boxstyle='round', facecolor='white', alpha=.5) 
-	ax.text(0.01, 0.026, 'Score = {}'.format(ma.score(X_test, y_test)), transform=ax.transAxes, verticalalignment='top', bbox=props) 
-
-	plt.title(kwargs['title']) 
-	plt.xlabel(kwargs['xaxis']) 
-	plt.ylabel(kwargs['yaxis']) 
+	plot_data(model.predict(X_train), school_encoded_train, y_train, kwargs['title'], 
+		kwargs['xaxis'], kwargs['yaxis'], 
+		model.score(X_train, y_train), 
+		cross_score, kwargs['file_name'],
+		kwargs['location'])
  
-	if kwargs['file_name']: 
-		if kwargs['location']: 
-			plt.savefig('{}/{} Test'.format(kwargs['location'], kwargs['file_name']) + '.png') 
-		else: 
-			plt.savefig('Graphs/{}'.format(kwargs['file_name']) + '.png') 
-	 
-	plt.show() 
+	plot_data(model.predict(X_test), school_encoded_train, y_test, kwargs['title'], 
+		kwargs['xaxis'], kwargs['yaxis'], 
+		model.score(X_test, y_test), 
+		cross_score, kwargs['file_name'],
+		kwargs['location'], test=True)
 
 	return {'cross_val_mean_train': cross_validation.mean(), 'cross_val_error_train': cross_validation.std() * 2} 
