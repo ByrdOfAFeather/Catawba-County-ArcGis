@@ -1,8 +1,0 @@
-pesudocode:
-
-x = housepoint 
-y = roadpoint
-distance = distance (√((x+y)**2)) 
-
-percent = distance * .9 
-location = x -> towards y by distance 

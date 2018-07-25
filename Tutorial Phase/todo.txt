@@ -1,5 +1,0 @@
-C:\Users\ADongre\AppData\Roaming\ESRI\Desktop10.3\ArcCatalog\Arcview.sde\sde.GIS.SCHOOLS
-
-Buffer schools
-Intersect parcels 
-Get pin data into a list and print from each parcels

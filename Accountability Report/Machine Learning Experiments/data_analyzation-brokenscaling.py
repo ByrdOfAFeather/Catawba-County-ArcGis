@@ -92,7 +92,7 @@ print('Dummy: {}'.format(dummy.score(X_test, y_test)))
 
 
 ### DATABASE SEPERATIONS ###
-# CORR_database = NC_database
+# CORR_database = NCDatabase
 # CORR_database = CORR_database.drop(CORR_database[CORR_database['MagnetSchoolPublicSchool201415'] == 999].index)
 # CORR_database = CORR_database.drop(CORR_database[CORR_database['CharterSchoolPublicSchool201415'] == 999].index)
 # CORR_database = CORR_database.drop(CORR_database[CORR_database['TitleIEligibleSchoolPublicSchool201415'] == 999].index)

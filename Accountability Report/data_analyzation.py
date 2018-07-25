@@ -47,14 +47,21 @@ neural_network_classification_params = dict(
 	title='Neural Network classifying schools into score-based tiers'
 	)
 
+database = NC_database().classification_setup(target_subject='English', score_threshold=60)
+
+# Creates a model based on a gradient boosting machine
 gradient_boosting = omega.nc_database_gradient_booster_regressor(
-  	NC_database().classification_setup(target_subject='English', score_threshold=60), **classification_params) 
+  	database,
+	**classification_params
+)
 
+# Creates a model based on a regular feed-forward neural network trained for classification
 neural_network_classification = omega.nc_database_nerual_network(
-	NC_database().classification_setup(target_subject='English', score_threshold=60), classification=True, **neural_network_classification_params)
+	database,
+	classification=True,
+	**neural_network_classification_params
+)
 
-# neural_network_regression = omega.nc_database_nerual_network(
-#  	NC_database().regression_setup(target_subject='Math', degree=2), **regression_params)
-
+# prints estimates of accuracy of models
 print(gradient_boosting.mean(), gradient_boosting.std() * 2)
 print(neural_network_classification.mean(), neural_network_classification.std() * 2)
